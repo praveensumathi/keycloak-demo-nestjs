@@ -6,7 +6,6 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { Request } from 'express';
 
 @Injectable()
@@ -23,12 +22,12 @@ export class AuthGuard implements CanActivate {
             const payload = await this.jwtService.verifyAsync(
                 token,
                 {
-                    secret: jwtConstants.secret
+                    algorithms: ["RS256"],
+                    issuer: "http://localhost:8080/realms/freelancer",
+                    publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqmKJSBX/QfDBpVeaHakBlwckMo4/LKVoP8WHRxnHJnUTp9daBkX1EuMMFMOGzKCeDI4n0Ez3mWxd5mZD1GPnNX4l1Dt0TfwDda+4dcnmmhbJ2fzGT+PCfRipYIZdCVWuUIpnwLoCYd0jZp4m68CmqEUs/voLplQxuWYXwCw55h3F70BS/m6W2OyY7Cq6xseZ4byrqr09fN44W9rEsCthp6p8Bn0uG5unDxZjqeQANnXLtOL0ZLNicb2S9gRE7OpVNVW+EkAC0wzD7rth0Niw0bbvEdqzKhtlXez2e2c2OvpDmcWQnYul8uyuW1iLhpe7UBxQji9KvriSb3mV0qR4aQIDAQAB\n-----END PUBLIC KEY-----"
                 }
             );
-            // 💡 We're assigning the payload to the request object here
-            // so that we can access it in our route handlers
-            request['user'] = payload;
+            request['email'] = payload.email;
         } catch {
             throw new UnauthorizedException();
         }
